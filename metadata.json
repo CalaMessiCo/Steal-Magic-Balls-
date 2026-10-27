@@ -1,0 +1,6 @@
+{
+  "name": "Steal Magic Balls",
+  "description": "Trò chơi sinh tồn chiến thuật Steal Magic Balls top-down quy mô lớn trên bản đồ 2500x2500 với 3000 người chơi, 5000 cần gạt, quái vật, BOSS và giải mã Cổng Mật Khẩu.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
