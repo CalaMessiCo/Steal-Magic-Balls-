@@ -1140,23 +1140,46 @@ export class GameEngine {
         dy /= len;
       }
 
-      // SPRINT MECHANIC: Hold Shift to sprint; costs 5 Magic Balls every 5 seconds
+      // SPRINT MECHANIC: Hold Shift to sprint.
+      // Rule: Khi kích hoạt chạy nhanh thì sẽ mất luôn 5 Magic Balls ngay khi kích hoạt (chống bug thả nút trước 5 giây).
+      // Mỗi 5 giây chạy tiếp theo sẽ trừ thêm 5 MB.
       let speed = 7.5;
       const isMoving = dx !== 0 || dy !== 0;
-      if (input.shift && isMoving && user.magicBalls >= 5) {
-        speed = 12.0; // Fast sprint!
-        user.isSprinting = true;
-        user.sprintDuration = (user.sprintDuration || 0) + dt;
-        if (user.sprintDuration >= 5.0) {
-          user.sprintDuration -= 5.0;
-          user.magicBalls = Math.max(0, user.magicBalls - 5);
-          this.addFloatingText(user.x, user.y, '-5 MB (Chạy nhanh)', '#f59e0b');
+      const wantsToSprint = Boolean(input.shift) && isMoving;
+      if (wantsToSprint) {
+        if (!user.isSprinting) {
+          // Newly activating sprint: must have >= 5 MB, charge 5 MB upfront!
+          if (user.magicBalls >= 5) {
+            user.magicBalls -= 5;
+            user.isSprinting = true;
+            user.sprintDuration = 0;
+            this.addFloatingText(user.x, user.y, '-5 MB (Bứt tốc)', '#f59e0b');
+            speed = 12.0;
+          } else {
+            user.isSprinting = false;
+            user.sprintDuration = 0;
+          }
+        } else {
+          // Already sprinting: maintain sprint
+          user.sprintDuration = (user.sprintDuration || 0) + dt;
+          if (user.sprintDuration >= 5.0) {
+            user.sprintDuration -= 5.0;
+            if (user.magicBalls >= 5) {
+              user.magicBalls -= 5;
+              this.addFloatingText(user.x, user.y, '-5 MB (Duy trì)', '#f59e0b');
+              speed = 12.0;
+            } else {
+              user.isSprinting = false;
+              user.sprintDuration = 0;
+              this.addFloatingText(user.x, user.y, 'Hết Magic Balls!', '#ef4444');
+            }
+          } else {
+            speed = 12.0;
+          }
         }
       } else {
         user.isSprinting = false;
-        if (!input.shift || !isMoving) {
-          user.sprintDuration = 0;
-        }
+        user.sprintDuration = 0;
       }
 
       user.x += dx * speed * dt;
@@ -1491,15 +1514,29 @@ export class GameEngine {
           // Normal attack with distance scaling
           this.attackWithEquippedWeapon(bot, angle, ex, ey);
         } else {
-          // Bot can sprint using Magic Balls to chase down target (speed 10.5, -5 MB every 5s)
+          // Bot sprint: costs 5 Magic Balls upfront immediately upon activation, then 5 MB per 5s
           let botSpeed = 6.2;
-          if (bot.magicBalls >= 5 && enemyDist > 2.5) {
-            botSpeed = 10.5;
-            bot.isSprinting = true;
-            bot.sprintDuration = (bot.sprintDuration || 0) + dt;
-            if (bot.sprintDuration >= 5.0) {
-              bot.sprintDuration -= 5.0;
-              bot.magicBalls = Math.max(0, bot.magicBalls - 5);
+          const botWantsToSprint = bot.magicBalls >= 5 && enemyDist > 2.5;
+          if (botWantsToSprint) {
+            if (!bot.isSprinting) {
+              bot.magicBalls -= 5;
+              bot.isSprinting = true;
+              bot.sprintDuration = 0;
+              botSpeed = 10.5;
+            } else {
+              bot.sprintDuration = (bot.sprintDuration || 0) + dt;
+              if (bot.sprintDuration >= 5.0) {
+                bot.sprintDuration -= 5.0;
+                if (bot.magicBalls >= 5) {
+                  bot.magicBalls -= 5;
+                  botSpeed = 10.5;
+                } else {
+                  bot.isSprinting = false;
+                  bot.sprintDuration = 0;
+                }
+              } else {
+                botSpeed = 10.5;
+              }
             }
           } else {
             bot.isSprinting = false;

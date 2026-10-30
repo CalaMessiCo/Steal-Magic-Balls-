@@ -133,7 +133,7 @@ export const InventoryModal: React.FC<InventoryModalProps> = ({ engine, onClose,
                 <li><strong>[E] Hồn Hồi (650 MB):</strong> Giúp người chơi không chết khi bị trúng sát thương từ Hồn Trảm (giữ lại máu và tiêu hao Hồn Hồi).</li>
                 <li><strong>[R] Khiên Thần (650 MB):</strong> Miễn nhiễm toàn bộ sát thương trong 5 giây (cả người chơi và bot đều dùng được).</li>
                 <li><strong>[C] Cần Gạt Tự Tạo (2500 MB):</strong> Cho 25 MB/lần gạt, trúng 2 lần Hồn Trảm bị phá (+500 MB & 5% ra mật khẩu).</li>
-                <li><strong>[Shift] Bứt Tốc:</strong> Giữ Shift để chạy nhanh hơn (tiêu hao 5 MB mỗi 5 giây chạy). Bot cũng có thể tiêu hao MB để bứt tốc truy đuổi.</li>
+                <li><strong>[Shift] Bứt Tốc:</strong> Giữ Shift để chạy nhanh (trừ ngay 5 MB khi vừa kích hoạt, sau đó trừ tiếp 5 MB mỗi 5 giây chạy liên tục). Không còn lợi dụng nhả phím trước 5s.</li>
                 <li><strong>Tường Phòng Thủ Dày Đặc:</strong> Xuất hiện dày đặc khắp bản đồ làm vật cản phòng thủ; cả người chơi bot, quái vật và đạn bình thường đều không thể đi xuyên qua tường.</li>
                 <li><strong>Hành vi Tấn Công Của Bot:</strong> 
                   <ul className="list-disc list-inside pl-4 text-slate-300">
